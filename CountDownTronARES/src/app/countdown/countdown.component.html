@@ -1,12 +1,45 @@
-<div class="container">
-    <h1 id="headline">Countdown to Tron ARES Release</h1>
-    <div id="countdown">
-      <ul>
-        <li><span id="months">{{months}}</span>Months</li>
-        <li><span id="days">{{days}}</span>Days</li>
-        <li><span id="hours">{{hours}}</span>Hours</li>
-        <li><span id="minutes">{{minutes}}</span>Minutes</li>
-        <li><span id="seconds">{{seconds}}</span>Seconds</li>
-      </ul>
-    </div>
-  </div>
+<link
+  rel="stylesheet"
+  media="screen"
+  href="https://fontlibrary.org/face/segment7"
+  type="text/css"
+/>
+<div class="display">
+  <p>Months: </p>
+  <p class="seven-segment">
+    {{ (time.getMonth() < 10 ? '0' : '') + time.getMonth() }}
+  </p>
+  <br>
+  <p> Days: </p>
+  <p class="seven-segment">
+    {{ (time.getDay() < 10 ? '0' : '') + time.getDay() }}
+  </p>
+  <br>
+  <p> Hours: </p>
+  <p class="seven-segment">
+    {{ (time.getHours() < 10 ? '0' : '') + time.getHours() }}
+  </p>
+  <p> Minutes: </p>
+  <p class="seven-segment">
+    {{ (time.getMinutes() < 10 ? '0' : '') + time.getMinutes() }}
+  </p>
+  <p> Seconds: </p>
+  <p class="seven-segment">
+    {{ (time.getSeconds() < 10 ? '0' : '') + time.getSeconds() }}
+  </p>
+</div>
+
+<div class="display-buttons">
+  <button
+    id="start"
+    class="btn btn-lg {{ isTimerRunning ? 'btn-danger' : 'btn-success' }}"
+    (click)="toggleTimer()"
+  >
+    {{ isTimerRunning ? 'Pause' : isStart ? 'Start' : 'Resume' }}
+  </button>
+  <!-- <button id="reset" class="btn btn-warning btn-lg" (click)="resetTimer()">
+    Reset
+  </button> -->
+</div>
+
+<!-- <app-timer-settings (timerSetted)="setTimer($event)"></app-timer-settings> -->

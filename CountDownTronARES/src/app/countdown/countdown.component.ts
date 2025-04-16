@@ -1,5 +1,5 @@
-import { Component, SimpleChanges } from '@angular/core';
-import { interval, map, Subscription } from 'rxjs';
+import { afterNextRender, AfterRenderPhase, ApplicationRef, ChangeDetectionStrategy, Component,  } from '@angular/core';
+import { first } from 'rxjs';
 
 @Component({
   selector: 'app-countdown',
@@ -7,86 +7,132 @@ import { interval, map, Subscription } from 'rxjs';
   imports: [],
   templateUrl: './countdown.component.html',
   styleUrl: './countdown.component.scss'
+  // ,  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CountdownComponent {
+  time = new Date();
+  refreshIntervalId: any;
+  isTimerRunning = false;
+  isStart = true;
+  timeSeted = {
+    month: 0,
+    day: 0,
+    hour: 0,
+    minute: 0,
+    second: 0
+  };
 
-  date: Date = new Date("10/10/2025");
-  dateNow: Date = new Date(Date.now());
+  public startTimer() {
+    console.log("time start");
+    this.isStart = false;
+    // this.refreshIntervalId = setInterval(() => {
+    //   // console.log("int");
+    //   if (
+    //     this.time.getMonth() !== 0 ||
+    //     this.time.getDate() !== 0 ||
+    //     this.time.getHours() !== 0 ||
+    //     this.time.getMinutes() !== 0 ||
+    //     this.time.getSeconds() !== 0
+    //   ) {
+    //     this.time.setSeconds(this.time.getSeconds() - 1);
+    //   }
+    // }, 1000);
+  //   afterNextRender(() => {
+  //     this.refreshIntervalId = setInterval(() => {
+  //     // console.log("int");
+  //     if (
+  //       this.time.getMonth() !== 0 ||
+  //       this.time.getDate() !== 0 ||
+  //       this.time.getHours() !== 0 ||
+  //       this.time.getMinutes() !== 0 ||
+  //       this.time.getSeconds() !== 0
+  //     ) {
+  //       this.time.setSeconds(this.time.getSeconds() - 1);
+  //     }
+  //   }, 1000);
+  // }, {phase: AfterRenderPhase.Write});
+    // console.log(this.applicationRef);
+    // console.log(this.applicationRef.isStable);
+    // console.log(this.applicationRef.isStable.pipe(first((isStable) => isStable)));
+    
+    
+    this.applicationRef.isStable.pipe(first((isStable) => isStable)).subscribe(() => {
+      console.log("application ref");
+      this.refreshIntervalId = setInterval(() => {
+        console.log("int");
+        if (
+          this.time.getMonth() !== 0 ||
+          this.time.getDate() !== 0 ||
+          this.time.getHours() !== 0 ||
+          this.time.getMinutes() !== 0 ||
+          this.time.getSeconds() !== 0
+        ) {
+          this.time.setSeconds(this.time.getSeconds() - 1);
+        }
+      }, 1000);
 
-  months: number;
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-
-  constructor(){
-    this.days = Math.abs(this.date.getDay() - this.dateNow.getDay());
-    this.hours = Math.abs(this.date.getHours() - this.dateNow.getHours());
-    this.minutes = Math.abs(this.date.getMinutes() - this.dateNow.getMinutes());
-    this.seconds = Math.abs(this.date.getSeconds() - this.dateNow.getSeconds());
-    this.months = Math.abs(this.date.getMonth() - this.dateNow.getMonth());
-    //this.startCountdown();
+    });
   }
 
-  private countdownSubscription?: Subscription;
+  stopTimer() {
+    clearInterval(this.refreshIntervalId);
+  }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    //console.log("NGONCHANGE");
-    if (changes['date'] && changes['date'].currentValue) {
-      this.startCountdown();
-    } else if (changes['date'] && !changes['date'].currentValue) {
-      this.stopCountdown();
-      this.resetTimer();
+  resetTimer() {
+    let today = new Date(Date.now());
+    let tronRelease = new Date("10/10/2025");
+
+    //simplify this
+    this.timeSeted.month = tronRelease.getMonth() - today.getMonth();
+    this.timeSeted.day = tronRelease.getDay() - today.getDay();
+    this.timeSeted.hour = tronRelease.getHours() - today.getHours();
+    this.timeSeted.minute = tronRelease.getMinutes() - today.getMinutes();
+    this.timeSeted.second = tronRelease.getSeconds() - today.getSeconds();
+
+    this.stopTimer();
+    this.time.setMonth(this.timeSeted.month);
+    this.time.setDate(this.timeSeted.day);
+    this.time.setHours(this.timeSeted.hour);
+    this.time.setMinutes(this.timeSeted.minute);
+    this.time.setSeconds(this.timeSeted.second);
+    this.isTimerRunning = false;
+    this.isStart = true;
+  }
+
+  toggleTimer() {
+    console.log("toggle");
+    if (this.isTimerRunning) {
+      this.stopTimer();
+    } else {
+      console.log("toggle start");
+      this.startTimer();
     }
+    this.isTimerRunning = !this.isTimerRunning;
   }
 
-  ngOnDestroy(): void {
-    this.stopCountdown();
+  setTimer(event: any) {
+    this.timeSeted = event;
+    this.resetTimer();
   }
 
-  private startCountdown(): void {
-    this.stopCountdown(); // Ensure any existing subscription is stopped
-
-    console.log("START COUNTDOWN");
-
-    this.countdownSubscription = interval(1000)
-      .pipe(
-        map(() => {
-          const now = new Date().getTime();
-          const distance = this.date.getTime() - now;
-
-          //console.log("distance", distance);
-          if (distance < 0) {
-            this.stopCountdown();
-            return { days: 0, hours: 0, minutes: 0, seconds: 0 };
-          }
-
-          const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-          const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-          return { days, hours, minutes, seconds };
-        })
-      )
-      .subscribe(time => {
-        this.days = time.days;
-        this.hours = time.hours;
-        this.minutes = time.minutes;
-        this.seconds = time.seconds;
-      });
+  constructor(private applicationRef: ApplicationRef,) {
+    this.resetTimer();
+    console.log("constructor");
+    // afterNextRender(() => {
+    //   this.startTimer();
+    // } );
   }
 
-  private stopCountdown(): void {
-    if (this.countdownSubscription) {
-      this.countdownSubscription.unsubscribe();
-    }
+  ngAfterInit(): void {
+    console.log("afterinit");
+    // this.startTimer();
   }
 
-  private resetTimer(): void {
-    this.days = 0;
-    this.hours = 0;
-    this.minutes = 0;
-    this.seconds = 0;
+  ngOnInit(): void {
+    console.log("ngoninit");
+    // this.resetTimer();
+
+    this.startTimer();
   }
+
 }
