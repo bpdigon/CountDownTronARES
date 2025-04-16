@@ -1,4 +1,4 @@
-import { afterNextRender, AfterRenderPhase, ApplicationRef, ChangeDetectionStrategy, Component,  } from '@angular/core';
+import { afterNextRender, AfterRenderPhase, ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component,  } from '@angular/core';
 import { first } from 'rxjs';
 
 @Component({
@@ -7,7 +7,7 @@ import { first } from 'rxjs';
   imports: [],
   templateUrl: './countdown.component.html',
   styleUrl: './countdown.component.scss'
-  // ,  changeDetection: ChangeDetectionStrategy.OnPush
+  , changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CountdownComponent {
   time = new Date();
@@ -57,9 +57,7 @@ export class CountdownComponent {
     
     
     this.applicationRef.isStable.pipe(first((isStable) => isStable)).subscribe(() => {
-      console.log("application ref");
       this.refreshIntervalId = setInterval(() => {
-        console.log("int");
         if (
           this.time.getMonth() !== 0 ||
           this.time.getDate() !== 0 ||
@@ -68,6 +66,7 @@ export class CountdownComponent {
           this.time.getSeconds() !== 0
         ) {
           this.time.setSeconds(this.time.getSeconds() - 1);
+          this.cdr.detectChanges();
         }
       }, 1000);
 
@@ -115,7 +114,7 @@ export class CountdownComponent {
     this.resetTimer();
   }
 
-  constructor(private applicationRef: ApplicationRef,) {
+  constructor(private applicationRef: ApplicationRef, private cdr: ChangeDetectorRef) {
     this.resetTimer();
     console.log("constructor");
     // afterNextRender(() => {
