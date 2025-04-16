@@ -1,24 +1,36 @@
-.display {
-  background-color: black;
-  color: red;
-  font-size: 2rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.title{
+  width: 70vw;
 }
 
-.seven-segment {
-  font-family: 'Segment7Standard';
+.container {
+  align-items: center;
+  // background-color: black;
+  // color: blue;
+  margin: 0 auto;
+  text-align: center;
+  // font-size: 30vh;
+  mix-blend-mode: difference;
+  filter: invert(1);
+  text-shadow: 5px 5px turquoise;
+}
+
+//CHANGE TO VIEW HEIGHT FOR MOBILE COMPATIBILTY
+h1 {
   font-weight: normal;
-  font-style: italic;
+  letter-spacing: .125rem;
+  font-size: 5.0rem;
+  text-transform: uppercase;
 }
 
-.display-buttons {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
+li {
+  display: inline-block;
+  font-size: 0.5em;
+  list-style-type: none;
+  padding: 1em;
+  text-transform: uppercase;
 }
 
-#reset {
-  align-self: flex-end;
+li span {
+  display: block;
+  font-size: 2.5rem;
 }

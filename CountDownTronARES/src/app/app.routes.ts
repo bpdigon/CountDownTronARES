@@ -5,7 +5,7 @@ import { CountdownComponent } from './countdown/countdown.component';
 export const routes: Routes = [
     {
         path: '',
-        component: CountdownComponent,
+        component: LandingpageComponent,
         pathMatch: 'full',
     },
 ];
