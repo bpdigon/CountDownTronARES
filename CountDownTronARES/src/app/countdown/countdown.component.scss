@@ -4,14 +4,19 @@
 
 .container {
   align-items: center;
-  // background-color: black;
+  background-color: black;
+  opacity: 50%;
   // color: blue;
   margin: 0 auto;
   text-align: center;
   // font-size: 30vh;
+  
+  //text-shadow: 5px 5px turquoise;
+}
+
+.countdown{
   mix-blend-mode: difference;
   filter: invert(1);
-  //text-shadow: 5px 5px turquoise;
 }
 
 h1 {
